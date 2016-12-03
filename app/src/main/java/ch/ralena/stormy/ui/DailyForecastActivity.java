@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import ch.ralena.stormy.R;
 import ch.ralena.stormy.adapters.DayAdapter;
 import ch.ralena.stormy.weather.Day;
@@ -22,14 +20,13 @@ public class DailyForecastActivity extends Activity {
 
 	private Day[] mDays;
 
-	@BindView(android.R.id.list) ListView mListView;
-	@BindView(android.R.id.empty) TextView mEmptyTextView;
+	ListView mListView;
+	TextView mEmptyTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_daily_forecast);
-		ButterKnife.bind(this);
 
 		Intent intent = getIntent();
 		Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
