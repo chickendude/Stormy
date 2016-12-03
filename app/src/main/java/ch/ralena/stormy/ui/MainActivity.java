@@ -1,11 +1,11 @@
 package ch.ralena.stormy.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,10 +20,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import ch.ralena.stormy.R;
+import ch.ralena.stormy.fragments.MainFragment;
 import ch.ralena.stormy.weather.Current;
 import ch.ralena.stormy.weather.Day;
 import ch.ralena.stormy.weather.Forecast;
@@ -34,41 +32,48 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainFragment.ButtonClick {
 	public static final String TAG = MainActivity.class.getSimpleName();
 	public static final String DAILY_FORECAST = "DAILY_FORECAST";
 	public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
+	private static final String MAIN_FRAGMENT = "main_fragment";
 
 	private Forecast mForecast;
 
-	@BindView(R.id.timeLabel) TextView mTimeLabel;
-	@BindView(R.id.temperatureLabel) TextView mTemperatureLabel;
-	@BindView(R.id.humidityValue) TextView mHumidityValue;
-	@BindView(R.id.precipValue) TextView mPrecipValue;
-	@BindView(R.id.summaryLabel) TextView mSummaryLabel;
-	@BindView(R.id.iconImageView) ImageView mIconImageView;
-	@BindView(R.id.refreshImageView) ImageView mRefreshImageView;
-	@BindView(R.id.progressBar)	ProgressBar mProgressBar;
-
+	TextView mTimeLabel;
+	TextView mTemperatureLabel;
+	TextView mHumidityValue;
+	TextView mPrecipValue;
+	TextView mSummaryLabel;
+	ImageView mIconImageView;
+	ImageView mRefreshImageView;
+	ProgressBar mProgressBar;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		ButterKnife.bind(this);
 
-		mProgressBar.setVisibility(View.INVISIBLE);
+		MainFragment mainFragment = new MainFragment();
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction()
+				.add(R.id.placeHolder, mainFragment, MAIN_FRAGMENT)
+				.commit();
 
-		final double latitude = 37.8267;
-		final double longitude = -122.4233;
-
-		mRefreshImageView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getForecast(latitude, longitude);
-			}
-		});
-
-		getForecast(latitude, longitude);
+		
+//		mProgressBar.setVisibility(View.INVISIBLE);
+//
+//		final double latitude = 37.8267;
+//		final double longitude = -122.4233;
+//
+//		mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				getForecast(latitude, longitude);
+//			}
+//		});
+//
+//		getForecast(latitude, longitude);
 		Log.d(TAG, "Main UI code");
 	}
 
@@ -243,26 +248,37 @@ public class MainActivity extends AppCompatActivity {
 		dialog.show(getFragmentManager(), "error_dialog");
 	}
 
-	@OnClick (R.id.dailyButton)
-	public void startDailyActivity(View view) {
-		if (mTemperatureLabel.getText().toString().equals("--")) {
-			Toast.makeText(MainActivity.this, "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
+	@Override
+	public void OnButtonClick(View v) {
+		Log.d(TAG, "click");
+		String tag = (String) v.getTag();
+		if (tag.equals(MainFragment.KEY_HOURLY_BUTTON)) {
+			Toast.makeText(this, "Hourly", Toast.LENGTH_SHORT).show();
 		} else {
-			Intent intent = new Intent(this, DailyForecastActivity.class);
-			intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-			startActivity(intent);
+			Toast.makeText(this, "Daily", Toast.LENGTH_SHORT).show();
 		}
 	}
 
-	@OnClick (R.id.hourlyButton)
-	public void startHourlyActivity(View view) {
-		// Make sure data is loaded first, otherwise app will crash
-		if (mTemperatureLabel.getText().toString().equals("--")) {
-			Toast.makeText(MainActivity.this, "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
-		} else {
-			Intent intent = new Intent(this, HourlyForecastActivity.class);
-			intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-			startActivity(intent);
-		}
-	}
+//	@OnClick (R.id.dailyButton)
+//	public void startDailyActivity(View view) {
+//		if (mTemperatureLabel.getText().toString().equals("--")) {
+//			Toast.makeText(MainActivity.this, "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
+//		} else {
+//			Intent intent = new Intent(this, DailyForecastActivity.class);
+//			intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+//			startActivity(intent);
+//		}
+//	}
+
+//	@OnClick (R.id.hourlyButton)
+//	public void startHourlyActivity(View view) {
+//		// Make sure data is loaded first, otherwise app will crash
+//		if (mTemperatureLabel.getText().toString().equals("--")) {
+//			Toast.makeText(MainActivity.this, "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
+//		} else {
+//			Intent intent = new Intent(this, HourlyForecastActivity.class);
+//			intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
+//			startActivity(intent);
+//		}
+//	}
 }
