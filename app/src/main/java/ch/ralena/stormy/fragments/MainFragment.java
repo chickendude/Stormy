@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,6 +23,7 @@ import java.io.IOException;
 
 import ch.ralena.stormy.R;
 import ch.ralena.stormy.ui.AlertDialogFragment;
+import ch.ralena.stormy.ui.MainActivity;
 import ch.ralena.stormy.weather.Current;
 import ch.ralena.stormy.weather.Day;
 import ch.ralena.stormy.weather.Forecast;
@@ -44,6 +44,8 @@ public class MainFragment extends Fragment {
 	private static final String TAG = MainFragment.class.getSimpleName();
 	private Forecast mForecast;
 
+	private OnUpdatedWeatherDataListener listener;
+
 	TextView mTimeLabel;
 	TextView mTemperatureLabel;
 	TextView mHumidityValue;
@@ -53,9 +55,14 @@ public class MainFragment extends Fragment {
 	ImageView mRefreshImageView;
 	ProgressBar mProgressBar;
 
-	// interface to handle hourly/weekly button clicks
-	public interface ButtonClick {
-		void OnButtonClick(View v);
+	public interface OnUpdatedWeatherDataListener {
+		void onUpdatedData(Forecast forecast);
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		listener = (OnUpdatedWeatherDataListener) context;
 	}
 
 	@Nullable
@@ -72,11 +79,6 @@ public class MainFragment extends Fragment {
 		mRefreshImageView = (ImageView) view.findViewById(R.id.refreshImageView);
 		mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 		mProgressBar.setVisibility(View.INVISIBLE);
-		// give buttons tags to identify them in the onclick method
-		Button hourlyButton = (Button) view.findViewById(R.id.hourlyButton);
-		hourlyButton.setTag(KEY_HOURLY_BUTTON);
-		Button dailyButton = (Button) view.findViewById(R.id.dailyButton);
-		dailyButton.setTag(KEY_DAILY_BUTTON);
 
 		final double latitude = 37.8267;
 		final double longitude = -122.4233;
@@ -88,41 +90,15 @@ public class MainFragment extends Fragment {
 			}
 		});
 
-		getForecast(latitude, longitude);
+		if (MainActivity.forecast != null) {
+			mForecast = MainActivity.forecast;
+			updateDisplay();
+		} else
+			getForecast(latitude, longitude);
 
 		// return our view
 		return view;
 	}
-
-//	public void startDailyActivity(View view) {
-//		if (mTemperatureLabel.getText().toString().equals("--")) {
-//			Toast.makeText(getActivity(), "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
-//		} else {
-//			Intent intent = new Intent(getActivity(), DailyForecastActivity.class);
-//			intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-//			startActivity(intent);
-//		}
-//	}
-//
-//	public void startHourlyActivity(View view) {
-//		// Make sure data is loaded first, otherwise app will crash
-//		if (mTemperatureLabel.getText().toString().equals("--")) {
-//			Log.d("H", "not loaded");
-//			Toast.makeText(getActivity(), "Data hasn't loaded yet...", Toast.LENGTH_SHORT).show();
-//		} else {
-//			Intent intent = new Intent(getActivity(), HourlyForecastActivity.class);
-//			intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-//			startActivity(intent);
-//			Log.d("H", "loaded");
-//		}
-//	}
-
-
-
-
-
-
-
 
 	private void getForecast(double latitude, double longitude) {
 		String apiKey = "9d42ab51a43f67995b496895110fb7d7";
@@ -163,12 +139,8 @@ public class MainFragment extends Fragment {
 						Log.v(TAG, jsonData);
 						if (response.isSuccessful()) {
 							mForecast = parseForecastDetails(jsonData);
-							getActivity().runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									updateDisplay();
-								}
-							});
+							listener.onUpdatedData(mForecast);
+							updateDisplay();
 						} else {
 							Log.d(TAG, "failure!");
 							alertUserAboutError("Oops! Error!", "There was an error. " +
@@ -198,15 +170,20 @@ public class MainFragment extends Fragment {
 	}
 
 	private void updateDisplay() {
-		Current current = mForecast.getCurrent();
-		Log.d(TAG, current.getTemp()+" is the current temperature");
-		mTemperatureLabel.setText(current.getTemp()+"");
-		mTimeLabel.setText("At " + current.getFormattedTime() + " it will be");
-		mHumidityValue.setText(current.getHumidity()+"");
-		mPrecipValue.setText(current.getPrecipChance()+"%");
-		mSummaryLabel.setText(current.getSummary());
-		Drawable drawable = getResources().getDrawable(current.getIconId());
-		mIconImageView.setImageDrawable(drawable);
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Current current = mForecast.getCurrent();
+				Log.d(TAG, current.getTemp() + " is the current temperature");
+				mTemperatureLabel.setText(current.getTemp() + "");
+				mTimeLabel.setText("At " + current.getFormattedTime() + " it will be");
+				mHumidityValue.setText(current.getHumidity() + "");
+				mPrecipValue.setText(current.getPrecipChance() + "%");
+				mSummaryLabel.setText(current.getSummary());
+				Drawable drawable = getResources().getDrawable(current.getIconId());
+				mIconImageView.setImageDrawable(drawable);
+			}
+		});
 	}
 
 	private Forecast parseForecastDetails(String jsonData) throws JSONException {
@@ -223,7 +200,7 @@ public class MainFragment extends Fragment {
 		JSONObject hourly = forecast.getJSONObject("hourly");
 		JSONArray data = hourly.getJSONArray("data");
 		Hour[] hours = new Hour[data.length()];
-		for (int i = 0; i < data.length(); i++ ) {
+		for (int i = 0; i < data.length(); i++) {
 			JSONObject hourObj = data.getJSONObject(i);
 			Hour hour = new Hour();
 			hour.setTime(hourObj.getLong("time"));
@@ -242,7 +219,7 @@ public class MainFragment extends Fragment {
 		JSONObject daily = forecast.getJSONObject("daily");
 		JSONArray data = daily.getJSONArray("data");
 		Day[] days = new Day[data.length()];
-		for (int i = 0; i < data.length(); i++ ) {
+		for (int i = 0; i < data.length(); i++) {
 			JSONObject dayObj = data.getJSONObject(i);
 			Day day = new Day();
 			day.setTime(dayObj.getLong("time"));

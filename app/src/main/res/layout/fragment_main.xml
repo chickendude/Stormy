@@ -6,7 +6,6 @@
 	android:id="@+id/activity_main"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/bg_gradient"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
@@ -146,34 +145,4 @@
 		android:layout_alignEnd="@+id/refreshImageView"
 		android:layout_alignParentTop="true"
 		android:layout_alignStart="@+id/refreshImageView"/>
-
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/summaryLabel"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="44dp"
-		android:orientation="horizontal">
-
-		<Button
-			android:id="@+id/hourlyButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:background="#40FFFFFF"
-			android:onClick="OnButtonClick"
-			android:text="Hourly"
-			android:textColor="#FFFFFFFF"/>
-
-		<Button
-			android:id="@+id/dailyButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="16dp"
-			android:layout_weight="1"
-			android:background="#40FFFFFF"
-			android:onClick="OnButtonClick"
-			android:text="7 DAY"
-			android:textColor="#ffffffff"/>
-	</LinearLayout>
 </RelativeLayout>
