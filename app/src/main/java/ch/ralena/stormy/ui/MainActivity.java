@@ -10,12 +10,10 @@ import ch.ralena.stormy.fragments.MainFragment;
 import ch.ralena.stormy.fragments.TabFragment;
 import ch.ralena.stormy.weather.Forecast;
 
+// TODO: look into other way to pass around the forecast variable
 public class MainActivity extends AppCompatActivity implements MainFragment.OnUpdatedWeatherDataListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
 
-	public static final String DAILY_FORECAST = "DAILY_FORECAST";
-	public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
-	private static final String MAIN_FRAGMENT = "main_fragment";
 	private static final String TAB_FRAGMENT = "tab_fragment";
 	private TabFragment mTabFragment;
 
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 
 	@Override
 	public void onUpdatedData(Forecast forecast) {
+		// TODO: check cause of null pointer exception on mTabFragment
 		this.forecast = forecast;
 		Log.d(TAG, "Updated weather data");
 		mTabFragment.updateData(forecast);

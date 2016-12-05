@@ -2,7 +2,6 @@ package ch.ralena.stormy.weather;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +51,6 @@ public class Day implements Parcelable {
 	}
 
 	public int getIconId() {
-		Log.d(TAG, Forecast.getIconId(mIcon)+"");
 		return Forecast.getIconId(mIcon);
 	}
 

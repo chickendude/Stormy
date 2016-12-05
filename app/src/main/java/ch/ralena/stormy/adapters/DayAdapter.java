@@ -1,7 +1,6 @@
 package ch.ralena.stormy.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ public class DayAdapter extends ListAdapter {
 	private Day[] mDays;
 
 	public DayAdapter() {
-		Log.d(TAG, "Created adapter");
 		if (MainActivity.forecast != null) {
 			mDays = MainActivity.forecast.getDailyForecast();
 		} else
@@ -31,7 +29,6 @@ public class DayAdapter extends ListAdapter {
 
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		Log.d(TAG, "created view");
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_daily, parent, false);
 		return new ListViewHolder(view);
 	}
@@ -48,7 +45,6 @@ public class DayAdapter extends ListAdapter {
 
 	@Override
 	public void updateWeather(Forecast forecast) {
-		Log.d(TAG,"UPDATE");
 		mDays = forecast.getDailyForecast();
 	}
 

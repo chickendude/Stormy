@@ -2,7 +2,6 @@ package ch.ralena.stormy.adapters;
 
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +19,8 @@ import ch.ralena.stormy.weather.Hour;
 public class HourAdapter extends ListAdapter {
 	Hour[] mHours;
 
-	public HourAdapter() {
-		Log.d("TAG","Created adapter");
-		mHours = new Hour[0];
+	public HourAdapter(Hour[] hours) {
+		mHours = hours;
 	}
 
 	@Override
@@ -43,7 +41,6 @@ public class HourAdapter extends ListAdapter {
 
 	@Override
 	public void updateWeather(Forecast forecast) {
-		Log.d("TAG","UPDATE");
 		mHours = forecast.getHourlyForecast();
 	}
 
@@ -79,34 +76,6 @@ public class HourAdapter extends ListAdapter {
 
 
 /*
-public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder> {
-
-	private Hour[] mHours;
-	private Context mContext;
-
-	public HourAdapter(Context context, Hour[] hours) {
-		mContext = context;
-		mHours = hours;
-	}
-
-	@Override
-	public HourViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.item_list_hourly, parent, false);
-		HourViewHolder viewHolder = new HourViewHolder(view);
-		return viewHolder;
-	}
-
-	@Override
-	public void onBindViewHolder(HourViewHolder holder, int position) {
-		holder.bindHour(mHours[position]);
-	}
-
-	@Override
-	public int getItemCount() {
-		return mHours.length;
-	}
-
 	public class HourViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 		public TextView mTimeLabel;
 		public ImageView mIconImageView;
@@ -121,13 +90,6 @@ public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder
 			mTemperatureLabel = (TextView) itemView.findViewById(R.id.temperatureLabel);
 			mSummaryLabel = (TextView) itemView.findViewById(R.id.summaryLabel);
 			itemView.setOnClickListener(this);
-		}
-
-		public void bindHour(Hour hour) {
-			mTimeLabel.setText(hour.getHour());
-			mSummaryLabel.setText(hour.getSummary());
-			mTemperatureLabel.setText(hour.getTemperature() + "");
-			mIconImageView.setImageResource(hour.getIconId());
 		}
 
 		@Override
