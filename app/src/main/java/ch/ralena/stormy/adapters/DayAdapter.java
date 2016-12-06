@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ch.ralena.stormy.R;
-import ch.ralena.stormy.ui.MainActivity;
 import ch.ralena.stormy.weather.Day;
 import ch.ralena.stormy.weather.Forecast;
 
@@ -20,9 +19,9 @@ public class DayAdapter extends ListAdapter {
 	private static final String TAG = DayAdapter.class.getSimpleName();
 	private Day[] mDays;
 
-	public DayAdapter() {
-		if (MainActivity.forecast != null) {
-			mDays = MainActivity.forecast.getDailyForecast();
+	public DayAdapter(Day[] days) {
+		if (days != null) {
+			mDays = days;
 		} else
 			mDays = new Day[0];
 	}

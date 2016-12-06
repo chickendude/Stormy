@@ -30,7 +30,10 @@ public class DailyFragment extends WeatherFragment {
 
 	@Override
 	public ListAdapter getAdapter() {
-		return new DayAdapter();
+		if (mDays==null) {
+			mDays = new Day[0];
+		}
+		return new DayAdapter(mDays);
 	}
 
 	@Override

@@ -33,9 +33,6 @@ public class HourlyFragment extends WeatherFragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		if (savedInstanceState != null && savedInstanceState.getParcelableArray(KEY_HOURS) != null) {
 			mHours = (Hour[]) savedInstanceState.getParcelableArray(KEY_HOURS);
-			Forecast forecast = new Forecast();
-			forecast.setHourlyForecast(mHours);
-			getAdapter().updateWeather(forecast);
 		}
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
