@@ -17,10 +17,12 @@ import ch.ralena.stormy.weather.Hour;
  */
 
 public class HourAdapter extends ListAdapter {
-	Hour[] mHours;
+	private Hour[] mHours;
+	private boolean mIsFahrenheit;
 
-	public HourAdapter(Hour[] hours) {
+	public HourAdapter(Hour[] hours, boolean isFahrenheit) {
 		mHours = hours;
+		mIsFahrenheit = isFahrenheit;
 	}
 
 	@Override
@@ -42,6 +44,7 @@ public class HourAdapter extends ListAdapter {
 	@Override
 	public void updateWeather(Forecast forecast) {
 		mHours = forecast.getHourlyForecast();
+		mIsFahrenheit = forecast.isFahrenheit();
 	}
 
 	private class ListViewHolder extends RecyclerView.ViewHolder {
@@ -62,7 +65,7 @@ public class HourAdapter extends ListAdapter {
 			if (hour != null) {
 				mTimeLabel.setText(hour.getHour());
 				mIconImageView.setImageResource(hour.getIconId());
-				mTemperatureLabel.setText(hour.getTemperature()+"");
+				mTemperatureLabel.setText(hour.getTemperature(mIsFahrenheit)+"");
 				mSummaryLabel.setText(hour.getSummary());
 			} else {
 				mTimeLabel.setText("--");
@@ -73,35 +76,3 @@ public class HourAdapter extends ListAdapter {
 		}
 	}
 }
-
-
-/*
-	public class HourViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-		public TextView mTimeLabel;
-		public ImageView mIconImageView;
-		public TextView mTemperatureLabel;
-		public TextView mSummaryLabel;
-
-		public HourViewHolder(View itemView) {
-			super(itemView);
-
-			mTimeLabel = (TextView) itemView.findViewById(R.id.timeLabel);
-			mIconImageView = (ImageView) itemView.findViewById(R.id.iconImageView);
-			mTemperatureLabel = (TextView) itemView.findViewById(R.id.temperatureLabel);
-			mSummaryLabel = (TextView) itemView.findViewById(R.id.summaryLabel);
-			itemView.setOnClickListener(this);
-		}
-
-		@Override
-		public void onClick(View v) {
-			String time, temperature, summary;
-			time = mTimeLabel.getText().toString();
-			temperature = mTemperatureLabel.getText().toString();
-			summary = mSummaryLabel.getText().toString();
-
-			String message = String.format("At %s, it will be %s and %s",time, temperature, summary);
-			Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-		}
-	}
-}
-*/

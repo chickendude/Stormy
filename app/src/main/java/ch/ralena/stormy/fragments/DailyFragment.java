@@ -46,14 +46,14 @@ public class DailyFragment extends WeatherFragment {
 	public void updateWeather(Forecast forecast) {
 		mDays = forecast.getDailyForecast();
 		final DayAdapter adapter = (DayAdapter) getListAdapter();
-		if (adapter != null) {
-			adapter.updateWeather(forecast);
+		adapter.updateWeather(forecast);
+		if (isAdded()) {
 			getActivity().runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					adapter.notifyDataSetChanged();
 				}
 			});
-		}
-	}
+		} // isAdded()
+	} // updateWeather()
 }

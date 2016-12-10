@@ -1,12 +1,13 @@
 package ch.ralena.stormy.weather;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import ch.ralena.stormy.R;
-
-public class Current {
+public class Current implements Parcelable {
 	private String mIcon;
 	private long mTime;
 	private double mTemp;
@@ -15,6 +16,9 @@ public class Current {
 	private String mSummary;
 	private String mTimeZone;
 
+	public Current() {
+	}
+
 	public int getIconId() {
 		return Forecast.getIconId(mIcon);
 	}
@@ -22,7 +26,7 @@ public class Current {
 	public String getFormattedTime() {
 		SimpleDateFormat formatter = new SimpleDateFormat("h:mm a");
 		formatter.setTimeZone(TimeZone.getTimeZone(mTimeZone));
-		return formatter.format(new Date(mTime*1000));
+		return formatter.format(new Date(mTime * 1000));
 	}
 
 	public String getTimeZone() {
@@ -53,6 +57,16 @@ public class Current {
 		return (int) Math.round(mTemp);
 	}
 
+	public int getTemp(boolean isFahrenheit) {
+		int temp;
+		if (isFahrenheit) {
+			temp = (int) Math.round(mTemp);
+		} else {
+			temp = (int) Math.round((mTemp-32)*5/9);
+		}
+		return temp;
+	}
+
 	public void setTemp(double temp) {
 		mTemp = temp;
 	}
@@ -66,7 +80,7 @@ public class Current {
 	}
 
 	public int getPrecipChance() {
-		return (int) Math.round(mPrecipChance*100);
+		return (int) Math.round(mPrecipChance * 100);
 	}
 
 	public void setPrecipChance(double precipChance) {
@@ -80,4 +94,42 @@ public class Current {
 	public void setSummary(String summary) {
 		mSummary = summary;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(mIcon);
+		dest.writeString(mTimeZone);
+		dest.writeString(mSummary);
+		dest.writeLong(mTime);
+		dest.writeDouble(mTemp);
+		dest.writeDouble(mHumidity);
+		dest.writeDouble(mPrecipChance);
+	}
+
+	protected Current(Parcel in) {
+		mIcon = in.readString();
+		mTimeZone = in.readString();
+		mSummary = in.readString();
+		mTime = in.readLong();
+		mTemp = in.readDouble();
+		mHumidity = in.readDouble();
+		mPrecipChance = in.readDouble();
+	}
+
+	public static final Creator<Current> CREATOR = new Creator<Current>() {
+		@Override
+		public Current createFromParcel(Parcel in) {
+			return new Current(in);
+		}
+
+		@Override
+		public Current[] newArray(int size) {
+			return new Current[size];
+		}
+	};
 }

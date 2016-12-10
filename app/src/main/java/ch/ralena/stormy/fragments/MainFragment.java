@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import ch.ralena.stormy.R;
 import ch.ralena.stormy.ui.AlertDialogFragment;
-import ch.ralena.stormy.ui.MainActivity;
 import ch.ralena.stormy.weather.Current;
 import ch.ralena.stormy.weather.Day;
 import ch.ralena.stormy.weather.Forecast;
@@ -34,18 +33,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static ch.ralena.stormy.R.id.locationLabel;
+
 /**
  * Created by crater-windoze on 12/3/2016.
  */
 
 public class MainFragment extends Fragment {
-	public static final String KEY_HOURLY_BUTTON = "key_hourly_button";
-	private static final String KEY_DAILY_BUTTON = "key_daily_button";
 	private static final String TAG = MainFragment.class.getSimpleName();
+	private static final String KEY_FORECAST = "key_forecast";
+	private static final java.lang.String KEY_ISFAHRENHEIT = "key_isfahrenheit";
 	private Forecast mForecast;
 
 	private OnUpdatedWeatherDataListener listener;
 
+	TextView mLocationLabel;
 	TextView mTimeLabel;
 	TextView mTemperatureLabel;
 	TextView mHumidityValue;
@@ -54,6 +56,10 @@ public class MainFragment extends Fragment {
 	ImageView mIconImageView;
 	ImageView mRefreshImageView;
 	ProgressBar mProgressBar;
+
+	private static double mLatitude = 37.8267;
+	private static double mLongitude = -122.4233;
+	private static String mLocationName;
 
 	public interface OnUpdatedWeatherDataListener {
 		void onUpdatedData(Forecast forecast);
@@ -70,6 +76,7 @@ public class MainFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 		// get widgets
+		mLocationLabel = (TextView) view.findViewById(locationLabel);
 		mTimeLabel = (TextView) view.findViewById(R.id.timeLabel);
 		mTemperatureLabel = (TextView) view.findViewById(R.id.temperatureLabel);
 		mHumidityValue = (TextView) view.findViewById(R.id.humidityValue);
@@ -80,24 +87,32 @@ public class MainFragment extends Fragment {
 		mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 		mProgressBar.setVisibility(View.INVISIBLE);
 
-		final double latitude = 37.8267;
-		final double longitude = -122.4233;
-
 		mRefreshImageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				double latitude = mLatitude;
+				double longitude = mLongitude;
 				getForecast(latitude, longitude);
 			}
 		});
 
-		if (MainActivity.forecast != null) {
-			mForecast = MainActivity.forecast;
-			updateDisplay();
-		} else
+		if (savedInstanceState != null && savedInstanceState.getParcelable(KEY_FORECAST) != null) {
+			mForecast = savedInstanceState.getParcelable(KEY_FORECAST);
+			updateDisplay(mForecast);
+		} else {
+			double latitude = mLatitude;
+			double longitude = mLongitude;
 			getForecast(latitude, longitude);
+		}
 
 		// return our view
 		return view;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable(KEY_FORECAST, mForecast);
+		super.onSaveInstanceState(outState);
 	}
 
 	private void getForecast(double latitude, double longitude) {
@@ -140,7 +155,7 @@ public class MainFragment extends Fragment {
 						if (response.isSuccessful()) {
 							mForecast = parseForecastDetails(jsonData);
 							listener.onUpdatedData(mForecast);
-							updateDisplay();
+//							updateDisplay();
 						} else {
 							Log.d(TAG, "failure!");
 							alertUserAboutError("Oops! Error!", "There was an error. " +
@@ -169,13 +184,15 @@ public class MainFragment extends Fragment {
 		}
 	}
 
-	private void updateDisplay() {
+	public void updateDisplay(Forecast forecast) {
+		mForecast = forecast;
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				Current current = mForecast.getCurrent();
 				Log.d(TAG, current.getTemp() + " is the current temperature");
-				mTemperatureLabel.setText(current.getTemp() + "");
+				mLocationLabel.setText(mLocationName);
+				mTemperatureLabel.setText(current.getTemp(mForecast.isFahrenheit()) + "");
 				mTimeLabel.setText("At " + current.getFormattedTime() + " it will be");
 				mHumidityValue.setText(current.getHumidity() + "");
 				mPrecipValue.setText(current.getPrecipChance() + "%");
@@ -270,5 +287,15 @@ public class MainFragment extends Fragment {
 		dialog.show(getActivity().getFragmentManager(), "error_dialog");
 	}
 
+	public static void setLatitude(double latitude) {
+		mLatitude = latitude;
+	}
 
+	public static void setLongitude(double longitude) {
+		mLongitude = longitude;
+	}
+
+	public void setLocationName(String location) {
+		mLocationName = location;
+	}
 }

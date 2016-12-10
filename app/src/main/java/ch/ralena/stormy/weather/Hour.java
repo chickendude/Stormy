@@ -40,8 +40,14 @@ public class Hour implements Parcelable {
 		mSummary = summary;
 	}
 
-	public int getTemperature() {
-		return (int) Math.round(mTemperature);
+	public int getTemperature(boolean isFahrenheit) {
+		int temp;
+		if (isFahrenheit) {
+			temp = (int) Math.round(mTemperature);
+		} else {
+			temp = (int) Math.round((mTemperature-32)*5/9);
+		}
+		return temp;
 	}
 
 	public void setTemperature(double temperature) {

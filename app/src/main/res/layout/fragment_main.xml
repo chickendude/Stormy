@@ -47,7 +47,7 @@
 		android:layout_above="@+id/timeLabel"
 		android:layout_centerHorizontal="true"
 		android:layout_marginBottom="60dp"
-		android:text="Alcatraz Island, CA"
+		android:text="Loading location"
 		android:textColor="@android:color/background_light"
 		android:textSize="24sp"/>
 

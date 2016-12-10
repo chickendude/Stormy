@@ -11,6 +11,7 @@ import ch.ralena.stormy.R;
 
 public class Forecast implements Parcelable {
 	private static final String KEY_HOURLY_FORECAST = "key_hourly_forecast";
+	private boolean mIsFahrenheit;
 	private Current mCurrent;
 	private Hour[] mHourlyForecast;
 	private Day[] mDailyForecast;
@@ -18,6 +19,7 @@ public class Forecast implements Parcelable {
 	public Forecast() {}
 
 	protected Forecast(Parcel in) {
+		mIsFahrenheit = in.readInt() != 0;
 		mHourlyForecast = in.createTypedArray(Hour.CREATOR);
 		mDailyForecast = in.createTypedArray(Day.CREATOR);
 	}
@@ -44,6 +46,14 @@ public class Forecast implements Parcelable {
 
 	public void setDailyForecast(Day[] dailyForecast) {
 		mDailyForecast = dailyForecast;
+	}
+
+	public boolean isFahrenheit() {
+		return mIsFahrenheit;
+	}
+
+	public void setIsFahrenheit(boolean fahrenheit) {
+		mIsFahrenheit = fahrenheit;
 	}
 
 	public static int getIconId(String icon) {
@@ -88,6 +98,7 @@ public class Forecast implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(mIsFahrenheit ? 1 : 0);
 		dest.writeTypedArray(mHourlyForecast, 0);
 		dest.writeTypedArray(mDailyForecast, 0);
 	}
