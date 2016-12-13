@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,7 +33,9 @@ import ch.ralena.stormy.fragments.WeatherFragment;
 import ch.ralena.stormy.weather.Forecast;
 
 // TODO: look into other way to pass around the mForecast variable
-public class MainActivity extends AppCompatActivity implements MainFragment.OnUpdatedWeatherDataListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements MainFragment.OnUpdatedWeatherDataListener,
+		View.OnClickListener,
+		LocationListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
 	public static final String[] TABS = {"Summary", "Hourly", "Daily"};
 	private static final int GPS_REQUEST_CODE = 1;
@@ -43,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	private boolean mIsFahrenheit = true;
 
 
-
 	private static MainFragment mMainFragment;
 	private static WeatherFragment mHourlyWeatherFragment;
 	private static WeatherFragment mDailyWeatherFragment;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	private TextView mFABText;
 
 	private LocationManager mLocationManager;
+	private String mProvider;
+	private Location mLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			mIsFahrenheit = savedInstanceState.getBoolean(KEY_ISFAHRENHEIT);
 			mFABText.setText(mIsFahrenheit ? "F" : "C");
 		}
-
-		// try to pull location info from GPS/wifi
-		getLocation();
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
 		viewPager.setOffscreenPageLimit(2);
@@ -119,27 +120,20 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		});
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 		tabLayout.setupWithViewPager(viewPager);
-	}
-
-	private void getLocation() {
-		// check if we have permission to access location data
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+		// set up location listener
+		if (!hasLocationPermission()) {
 			ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_REQUEST_CODE);
 			return;
-		} else {
-			Log.d(TAG, "Call location service thing");
-			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-			String provider = mLocationManager.getBestProvider(new Criteria(), false);
-			Location location = mLocationManager.getLastKnownLocation(provider);
-			if (location == null) {
-				Log.e(TAG, "Error parsing location");
-
-			}
-//			Log.d(TAG, getLocationName(location));
-			MainFragment.setLatitude(location.getLatitude());
-			MainFragment.setLongitude(location.getLongitude());
-			mMainFragment.setLocationName(getLocationName(location));
 		}
+		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		mProvider = mLocationManager.getBestProvider(new Criteria(), false);
+		mLocation = mLocationManager.getLastKnownLocation(mProvider);
+		if (mLocation != null) {
+			mMainFragment.setLatitude(mLocation.getLatitude());
+			mMainFragment.setLongitude(mLocation.getLongitude());
+			mMainFragment.setLocationName(getLocationName(mLocation));
+		}
+		mLocationManager.requestLocationUpdates(mProvider, 5000, 10, this);
 	}
 
 	private String getLocationName(Location location) {
@@ -168,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		mDailyWeatherFragment.updateWeather(forecast);
 	}
 
+	// Floating Action Button's onclick listener
 	@Override
 	public void onClick(View v) {
 		mIsFahrenheit = !mIsFahrenheit;
@@ -178,8 +173,47 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	}
 
 	@Override
+	protected void onStop() {
+		super.onStop();
+		if (hasLocationPermission()) {
+			mLocationManager.removeUpdates(this);
+		}
+	}
+
+	private boolean hasLocationPermission() {
+		return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean(KEY_ISFAHRENHEIT, mIsFahrenheit);
 		super.onSaveInstanceState(outState);
 	}
+
+	// ########## Location Listener methods ############
+	@Override
+	public void onLocationChanged(Location location) {
+		mLocation = location;
+		mMainFragment.setLatitude(mLocation.getLatitude());
+		mMainFragment.setLongitude(mLocation.getLongitude());
+		mMainFragment.setLocationName(getLocationName(mLocation));
+		mMainFragment.getForecast();
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+
+	}
+	// ########## End Location Listener Methods ############
+
 }

@@ -1,4 +1,4 @@
-package ch.ralena.stormy.ui;
+package ch.ralena.stormy.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

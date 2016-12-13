@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import ch.ralena.stormy.R;
-import ch.ralena.stormy.ui.AlertDialogFragment;
+import ch.ralena.stormy.ui.AlertDialog;
 import ch.ralena.stormy.weather.Current;
 import ch.ralena.stormy.weather.Day;
 import ch.ralena.stormy.weather.Forecast;
@@ -57,8 +57,8 @@ public class MainFragment extends Fragment {
 	ImageView mRefreshImageView;
 	ProgressBar mProgressBar;
 
-	private static double mLatitude = 37.8267;
-	private static double mLongitude = -122.4233;
+	private static double mLatitude = 0;
+	private static double mLongitude = 0;
 	private static String mLocationName;
 
 	public interface OnUpdatedWeatherDataListener {
@@ -90,9 +90,7 @@ public class MainFragment extends Fragment {
 		mRefreshImageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				double latitude = mLatitude;
-				double longitude = mLongitude;
-				getForecast(latitude, longitude);
+				getForecast();
 			}
 		});
 
@@ -100,9 +98,7 @@ public class MainFragment extends Fragment {
 			mForecast = savedInstanceState.getParcelable(KEY_FORECAST);
 			updateDisplay(mForecast);
 		} else {
-			double latitude = mLatitude;
-			double longitude = mLongitude;
-			getForecast(latitude, longitude);
+			getForecast();
 		}
 
 		// return our view
@@ -115,10 +111,14 @@ public class MainFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
-	private void getForecast(double latitude, double longitude) {
+	public void getForecast() {
+		if (mLatitude == 0 || mLongitude == 0) {
+			new AlertDialog(getActivity().getFragmentManager(),AlertDialog.LOCATION_ERROR).show();
+			return;
+		}
 		String apiKey = "9d42ab51a43f67995b496895110fb7d7";
 		String forecastUrl = "https://api.darksky.net/forecast/" + apiKey +
-				"/" + latitude + "," + longitude;
+				"/" + mLatitude + "," + mLongitude;
 
 		if (isNetworkAvailable()) {
 			toggleRefresh();
@@ -287,11 +287,11 @@ public class MainFragment extends Fragment {
 		dialog.show(getActivity().getFragmentManager(), "error_dialog");
 	}
 
-	public static void setLatitude(double latitude) {
+	public void setLatitude(double latitude) {
 		mLatitude = latitude;
 	}
 
-	public static void setLongitude(double longitude) {
+	public void setLongitude(double longitude) {
 		mLongitude = longitude;
 	}
 
