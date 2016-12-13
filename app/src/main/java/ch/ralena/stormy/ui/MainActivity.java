@@ -157,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_REQUEST_CODE);
 			return;
 		}
+
+		// set up location listener
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		mProvider = mLocationManager.getBestProvider(new Criteria(), false);
 		//noinspection ResourceType (we check permissions in the haslocationpermission method)
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			mMainFragment.setLocationName(getLocationName(mLocation));
 		}
 		//noinspection ResourceType
-		mLocationManager.requestLocationUpdates(mProvider, 5000, 10, this);
+		mLocationManager.requestLocationUpdates(mProvider, 15000, 10, this);
 	}
 
 	private String getLocationName(Location location) {
