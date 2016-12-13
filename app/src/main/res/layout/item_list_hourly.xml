@@ -8,7 +8,7 @@
 				android:paddingBottom="8dp"
 				android:paddingStart="16dp"
 				android:paddingEnd="16dp"
-				tools:background="@drawable/bg_gradient">
+				tools:background="@drawable/bg_gradient_hot">
 
 	<TextView
 		android:layout_width="80dp"

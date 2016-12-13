@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	private static WeatherFragment mDailyWeatherFragment;
 	private FloatingActionButton mFloatingActionButton;
 	private TextView mFABText;
+	private RelativeLayout mMainLayout;
 
 	private LocationManager mLocationManager;
 	private String mProvider;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mMainLayout = (RelativeLayout) findViewById(R.id.activity_main);
 
 		boolean isTablet = getResources().getBoolean(R.bool.isTablet);
 
@@ -181,6 +185,19 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	public void onUpdatedData(Forecast forecast) {
 //		getLocation();
 		mForecast = forecast;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				int curTemp = mForecast.getCurrent().getTemp();
+				if (curTemp > 70) {
+					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_hot));
+				} else if (curTemp > 50) {
+					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cool));
+				} else {
+					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cold));
+				}
+			}
+		});
 		mForecast.setIsFahrenheit(mIsFahrenheit);
 		Log.d(TAG, "Updated weather data");
 		mMainFragment.updateDisplay(forecast);

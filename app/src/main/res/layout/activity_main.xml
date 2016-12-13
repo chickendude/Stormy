@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/activity_main"
 			  android:orientation="vertical"
 			  android:layout_width="match_parent"
 			  android:layout_height="match_parent"
-			  android:background="@drawable/bg_gradient">
+			  android:background="@drawable/bg_gradient_hot">
 
 	<android.support.design.widget.TabLayout
 		android:id="@+id/tabLayout"
