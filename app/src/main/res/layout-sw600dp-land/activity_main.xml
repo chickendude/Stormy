@@ -5,24 +5,30 @@
 				android:background="@drawable/bg_gradient"
 				android:orientation="vertical">
 
-
-	<FrameLayout
-		android:id="@+id/leftPlaceholder"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
-
 	<LinearLayout
 		android:id="@+id/titleBar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/leftPlaceholder"
 		android:orientation="horizontal">
 
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_weight="4"
+			android:background="@color/colorPrimary"
+			android:padding="3dp"
+			android:text="Today"
+			android:textAlignment="center"
+			android:textColor="#FFFFFF"
+			android:textSize="30sp"
+			android:textStyle="bold"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:layout_weight="3"
-			android:padding="10dp"
+			android:background="@color/colorPrimary"
+			android:padding="3dp"
 			android:text="Hourly"
 			android:textAlignment="center"
 			android:textColor="#FFFFFF"
@@ -33,12 +39,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="3"
-			android:padding="10dp"
+			android:background="@color/colorPrimary"
+			android:padding="3dp"
 			android:text="Daily"
 			android:textAlignment="center"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"
 			android:textStyle="bold"/>
+
+
 	</LinearLayout>
 
 	<LinearLayout
@@ -48,16 +57,22 @@
 		android:orientation="horizontal">
 
 		<FrameLayout
+			android:id="@+id/leftPlaceholder"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="4"/>
+
+		<FrameLayout
 			android:id="@+id/middlePlaceholder"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:layout_weight="1"/>
+			android:layout_weight="3"/>
 
 		<FrameLayout
 			android:id="@+id/rightPlaceholder"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:layout_weight="1"/>
+			android:layout_weight="3"/>
 
 
 	</LinearLayout>
