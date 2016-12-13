@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	public static final String[] TABS = {"Summary", "Hourly", "Daily"};
 	private static final int GPS_REQUEST_CODE = 1;
 	private static final String KEY_ISFAHRENHEIT = "key_isfahrenheit";
+	private static final String MAIN_FRAGMENT = "main_fragment";
+	private static final String HOURLY_FRAGMENT = "hourly_fragment";
+	private static final String DAILY_FRAGMENT = "daily_fragment";
 	public static int gUpdates = 0;
 
 	private static Forecast mForecast;
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+
 		mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
 		mFABText = (TextView) findViewById(R.id.floatingActionButtonText);
 		mFloatingActionButton.setOnClickListener(this);
@@ -69,57 +75,75 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			mMainFragment = new MainFragment();
 			mHourlyWeatherFragment = new HourlyFragment();
 			mDailyWeatherFragment = new DailyFragment();
-		} else {
-			mIsFahrenheit = savedInstanceState.getBoolean(KEY_ISFAHRENHEIT);
-			mFABText.setText(mIsFahrenheit ? "F" : "C");
 		}
 
-		ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-		viewPager.setOffscreenPageLimit(2);
-		viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-			@Override
-			public CharSequence getPageTitle(int position) {
-				return TABS[position];
+		if(!isTablet) {
+			if (savedInstanceState != null) {
+				mIsFahrenheit = savedInstanceState.getBoolean(KEY_ISFAHRENHEIT);
+				mFABText.setText(mIsFahrenheit ? "F" : "C");
 			}
 
-			@Override
-			public Fragment getItem(int position) {
-				switch (position) {
-					case 0:
-						return mMainFragment;
-					case 1:
-						return mHourlyWeatherFragment;
-					case 2:
-						return mDailyWeatherFragment;
-					default:
-						return null;
+			ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+			viewPager.setOffscreenPageLimit(2);
+			viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+				@Override
+				public CharSequence getPageTitle(int position) {
+					return TABS[position];
 				}
-			}
 
-			@Override
-			public Object instantiateItem(ViewGroup container, int position) {
-				Fragment fragment = (Fragment) super.instantiateItem(container, position);
-				switch (position) {
-					case 0:
-						mMainFragment = (MainFragment) fragment;
-						break;
-					case 1:
-						mHourlyWeatherFragment = (WeatherFragment) fragment;
-						break;
-					case 2:
-						mDailyWeatherFragment = (WeatherFragment) fragment;
-						break;
+				@Override
+				public Fragment getItem(int position) {
+					switch (position) {
+						case 0:
+							return mMainFragment;
+						case 1:
+							return mHourlyWeatherFragment;
+						case 2:
+							return mDailyWeatherFragment;
+						default:
+							return null;
+					}
 				}
-				return fragment;
-			}
 
-			@Override
-			public int getCount() {
-				return TABS.length;
+				@Override
+				public Object instantiateItem(ViewGroup container, int position) {
+					Fragment fragment = (Fragment) super.instantiateItem(container, position);
+					switch (position) {
+						case 0:
+							mMainFragment = (MainFragment) fragment;
+							break;
+						case 1:
+							mHourlyWeatherFragment = (WeatherFragment) fragment;
+							break;
+						case 2:
+							mDailyWeatherFragment = (WeatherFragment) fragment;
+							break;
+					}
+					return fragment;
+				}
+
+				@Override
+				public int getCount() {
+					return TABS.length;
+				}
+			});
+			TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+			tabLayout.setupWithViewPager(viewPager);
+		} else {
+			MainFragment savedFragment = (MainFragment) getSupportFragmentManager()
+					.findFragmentByTag(MAIN_FRAGMENT);
+			if (savedFragment == null) {
+				FragmentManager fragmentManager = getSupportFragmentManager();
+				fragmentManager.beginTransaction().add(R.id.leftPlaceholder, mMainFragment, MAIN_FRAGMENT)
+						.add(R.id.middlePlaceholder, mHourlyWeatherFragment, HOURLY_FRAGMENT)
+						.add(R.id.rightPlaceholder, mDailyWeatherFragment, DAILY_FRAGMENT)
+						.commit();
+			} else {
+				mMainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT);
+				mHourlyWeatherFragment = (WeatherFragment) getSupportFragmentManager().findFragmentByTag(HOURLY_FRAGMENT);
+				mDailyWeatherFragment = (WeatherFragment) getSupportFragmentManager().findFragmentByTag(DAILY_FRAGMENT);
 			}
-		});
-		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-		tabLayout.setupWithViewPager(viewPager);
+		}
 		// set up location listener
 		if (!hasLocationPermission()) {
 			ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_REQUEST_CODE);
