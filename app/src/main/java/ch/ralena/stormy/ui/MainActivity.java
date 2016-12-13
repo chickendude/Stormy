@@ -79,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			mMainFragment = new MainFragment();
 			mHourlyWeatherFragment = new HourlyFragment();
 			mDailyWeatherFragment = new DailyFragment();
+		} else {
+			if (mForecast != null) {
+				updateBackground();
+			}
 		}
 
 		if(!isTablet) {
@@ -188,14 +192,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				int curTemp = mForecast.getCurrent().getTemp();
-				if (curTemp > 70) {
-					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_hot));
-				} else if (curTemp > 50) {
-					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cool));
-				} else {
-					mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cold));
-				}
+				updateBackground();
 			}
 		});
 		mForecast.setIsFahrenheit(mIsFahrenheit);
@@ -203,6 +200,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		mMainFragment.updateDisplay(forecast);
 		mHourlyWeatherFragment.updateWeather(forecast);
 		mDailyWeatherFragment.updateWeather(forecast);
+	}
+
+	private void updateBackground() {
+		int curTemp = mForecast.getCurrent().getTemp();
+		if (curTemp > 70) {
+			mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_hot));
+		} else if (curTemp > 50) {
+			mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cool));
+		} else {
+			mMainLayout.setBackground(getResources().getDrawable(R.drawable.bg_gradient_cold));
+		}
 	}
 
 	// Floating Action Button's onclick listener

@@ -40,4 +40,11 @@
 		android:textColor="#FFFFFFFF"
 		android:textSize="30sp"/>
 
+	<ImageView
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentStart="true"
+		android:src="@drawable/poweredby"/>
+
 </RelativeLayout>

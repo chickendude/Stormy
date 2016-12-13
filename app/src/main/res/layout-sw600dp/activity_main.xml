@@ -6,7 +6,6 @@
 				android:background="@drawable/bg_gradient_hot"
 				android:orientation="vertical">
 
-
 	<FrameLayout
 		android:id="@+id/leftPlaceholder"
 		android:layout_width="match_parent"
@@ -85,5 +84,12 @@
 		android:textColor="#FFFFFFFF"
 		android:textSize="30sp"
 		android:textStyle="bold"/>
+
+	<ImageView
+		android:layout_width="150dp"
+		android:layout_height="50dp"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentEnd="true"
+		android:src="@drawable/poweredby"/>
 
 </RelativeLayout>
