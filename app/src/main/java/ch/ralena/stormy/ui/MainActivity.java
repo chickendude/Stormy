@@ -131,9 +131,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 			String provider = mLocationManager.getBestProvider(new Criteria(), false);
 			Location location = mLocationManager.getLastKnownLocation(provider);
-			Log.d(TAG, getLocationName(location));
+			if (location == null) {
+				Log.e(TAG, "Error parsing location");
+
+			}
+//			Log.d(TAG, getLocationName(location));
 			MainFragment.setLatitude(location.getLatitude());
 			MainFragment.setLongitude(location.getLongitude());
+			mMainFragment.setLocationName(getLocationName(location));
 		}
 	}
 
