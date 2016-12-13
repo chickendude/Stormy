@@ -18,6 +18,7 @@ import ch.ralena.stormy.weather.Forecast;
 public class DayAdapter extends ListAdapter {
 	private static final String TAG = DayAdapter.class.getSimpleName();
 	private Day[] mDays;
+	private boolean mIsFahrenheit;
 
 	public DayAdapter(Day[] days) {
 		if (days != null) {
@@ -45,6 +46,7 @@ public class DayAdapter extends ListAdapter {
 	@Override
 	public void updateWeather(Forecast forecast) {
 		mDays = forecast.getDailyForecast();
+		mIsFahrenheit = forecast.isFahrenheit();
 	}
 
 	private class ListViewHolder extends RecyclerView.ViewHolder {
@@ -64,7 +66,7 @@ public class DayAdapter extends ListAdapter {
 		public void onBindView(Day day) {
 			mIconImageView.setImageResource(day.getIconId());
 //			mCircleImageView.setImageResource(day.getIconId());
-			mTemperatureLabel.setText(day.getTemperatureMax()+"");
+			mTemperatureLabel.setText(day.getTemperatureMax(mIsFahrenheit)+"");
 			mDayLabel.setText(day.getDayOfTheWeek());
 		}
 	}
