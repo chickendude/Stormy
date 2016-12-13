@@ -127,12 +127,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		}
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		mProvider = mLocationManager.getBestProvider(new Criteria(), false);
+		//noinspection ResourceType (we check permissions in the haslocationpermission method)
 		mLocation = mLocationManager.getLastKnownLocation(mProvider);
 		if (mLocation != null) {
 			mMainFragment.setLatitude(mLocation.getLatitude());
 			mMainFragment.setLongitude(mLocation.getLongitude());
 			mMainFragment.setLocationName(getLocationName(mLocation));
 		}
+		//noinspection ResourceType
 		mLocationManager.requestLocationUpdates(mProvider, 5000, 10, this);
 	}
 
@@ -176,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	protected void onStop() {
 		super.onStop();
 		if (hasLocationPermission()) {
+			//noinspection ResourceType
 			mLocationManager.removeUpdates(this);
 		}
 	}
