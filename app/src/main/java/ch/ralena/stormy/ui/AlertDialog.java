@@ -13,9 +13,11 @@ public class AlertDialog {
 	private Bundle bundle;
 	private FragmentManager mFragmentManager;
 	public static final int LOCATION_ERROR = 0;
+	public static final int NETWORK_ERROR = 1;
 
 	private static final String[] ERRORS = {
-			"Error parsing location", "There was an error retrieving your device's location.",
+			"Location Error", "There was an error retrieving your device's location.",
+			"Network Error", "Your device doesn't appear to be connected to the internet",
 	};
 
 
@@ -23,8 +25,8 @@ public class AlertDialog {
 		if (errorType > ERRORS.length / 2) {
 			throw new IllegalArgumentException();
 		} else {
-			String title = ERRORS[errorType];
-			String message = ERRORS[errorType+1];
+			String title = ERRORS[errorType*2];
+			String message = ERRORS[errorType*2+1];
 			initialize(fragmentManager, title, message);
 		}
 	}

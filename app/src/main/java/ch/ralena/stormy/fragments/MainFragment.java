@@ -112,15 +112,15 @@ public class MainFragment extends Fragment {
 	}
 
 	public void getForecast() {
-		if (mLatitude == 0 || mLongitude == 0) {
-			new AlertDialog(getActivity().getFragmentManager(),AlertDialog.LOCATION_ERROR).show();
-			return;
-		}
 		String apiKey = "9d42ab51a43f67995b496895110fb7d7";
 		String forecastUrl = "https://api.darksky.net/forecast/" + apiKey +
 				"/" + mLatitude + "," + mLongitude;
 
 		if (isNetworkAvailable()) {
+			if (mLatitude == 0 || mLongitude == 0) {
+				new AlertDialog(getActivity().getFragmentManager(),AlertDialog.LOCATION_ERROR).show();
+				return;
+			}
 			toggleRefresh();
 			OkHttpClient client = new OkHttpClient();
 			Request request = new Request.Builder()
@@ -170,7 +170,7 @@ public class MainFragment extends Fragment {
 				}
 			});
 		} else {
-			alertUserAboutError("Oops! Error!", getResources().getString(R.string.network_unavailable_message));
+			new AlertDialog(getActivity().getFragmentManager(),AlertDialog.NETWORK_ERROR).show();
 		}
 	}
 
