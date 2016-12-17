@@ -117,11 +117,12 @@ public class MainFragment extends Fragment {
 				"/" + mLatitude + "," + mLongitude;
 
 		if (isNetworkAvailable()) {
+			toggleRefresh();
 			if (mLatitude == 0 || mLongitude == 0) {
 				new AlertDialog(getActivity().getFragmentManager(),AlertDialog.LOCATION_ERROR).show();
+				toggleRefresh();
 				return;
 			}
-			toggleRefresh();
 			OkHttpClient client = new OkHttpClient();
 			Request request = new Request.Builder()
 					.url(forecastUrl)

@@ -9,8 +9,8 @@
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
-	tools:context="ch.ralena.stormy.ui.MainActivity"
-	tools:background="@drawable/bg_gradient_hot">
+	tools:background="@drawable/bg_gradient_hot"
+	tools:context="ch.ralena.stormy.ui.MainActivity">
 
 	<ImageView
 		android:id="@+id/degreeImageView"
@@ -46,37 +46,37 @@
 		style="?android:attr/progressBarStyle"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignTop="@+id/refreshImageView"
 		android:layout_alignBottom="@id/refreshImageView"
+		android:layout_alignEnd="@id/refreshImageView"
 		android:layout_alignStart="@id/refreshImageView"
-		android:layout_alignEnd="@id/refreshImageView"/>
+		android:layout_alignTop="@+id/refreshImageView"/>
 
 	<ImageView
 		android:id="@+id/refreshImageView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		app:srcCompat="@drawable/refresh"
 		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"/>
+		android:layout_centerHorizontal="true"
+		app:srcCompat="@drawable/refresh"/>
 
 	<TextView
 		android:id="@+id/temperatureLabel"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_alignParentStart="true"
+		android:layout_below="@+id/timeLabel"
+		android:layout_marginStart="11dp"
 		android:text="--"
 		android:textColor="@android:color/background_light"
-		android:textSize="150sp"
-		android:layout_marginStart="11dp"
-		android:layout_below="@+id/timeLabel"
-		android:layout_alignParentStart="true"/>
+		android:textSize="150sp"/>
 
 	<LinearLayout
 		android:id="@+id/linearLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
 		android:layout_below="@+id/degreeImageView"
-		android:layout_toEndOf="@+id/degreeImageView">
+		android:layout_toEndOf="@+id/degreeImageView"
+		android:orientation="horizontal">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -131,21 +131,23 @@
 		android:id="@+id/locationLabel"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_below="@+id/progressBar"
+		android:layout_marginLeft="10dp"
+		android:layout_toEndOf="@+id/iconImageView"
 		android:text="Loading location"
 		android:textColor="@android:color/background_light"
-		android:textSize="24sp"
-		android:layout_below="@+id/progressBar"
-		android:layout_toEndOf="@+id/iconImageView"
-		android:layout_marginLeft="10dp"/>
+		android:textSize="24sp"/>
 
 	<TextView
 		android:id="@+id/timeLabel"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_marginLeft="20dp"
+		android:layout_alignBaseline="@id/locationLabel"
+		android:layout_alignBottom="@id/locationLabel"
+		android:layout_centerHorizontal="true"
+		android:layout_toRightOf="@id/locationLabel"
 		android:text="..."
 		android:textColor="#80ffffff"
-		android:textSize="18sp"
-		android:layout_alignBaseline="@+id/locationLabel"
-		android:layout_alignBottom="@+id/locationLabel"
-		android:layout_centerHorizontal="true"/>
+		android:textSize="18sp"/>
 </RelativeLayout>
