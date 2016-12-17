@@ -1,18 +1,8 @@
 package ch.ralena.stormy.ui;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,10 +14,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
 import ch.ralena.stormy.R;
 import ch.ralena.stormy.fragments.DailyFragment;
 import ch.ralena.stormy.fragments.HourlyFragment;
@@ -37,8 +23,7 @@ import ch.ralena.stormy.weather.Forecast;
 
 // TODO: look into other way to pass around the mForecast variable
 public class MainActivity extends AppCompatActivity implements MainFragment.OnUpdatedWeatherDataListener,
-		View.OnClickListener,
-		LocationListener {
+		View.OnClickListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
 	public static final String[] TABS = {"Summary", "Hourly", "Daily"};
 	private static final int GPS_REQUEST_CODE = 1;
@@ -58,10 +43,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	private FloatingActionButton mFloatingActionButton;
 	private TextView mFABText;
 	private RelativeLayout mMainLayout;
-
-	private LocationManager mLocationManager;
-	private String mProvider;
-	private Location mLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -153,59 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 				mDailyWeatherFragment = (WeatherFragment) getSupportFragmentManager().findFragmentByTag(DAILY_FRAGMENT);
 			}
 		}
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		// set up location listener
-		if (!hasLocationPermission()) {
-			ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_REQUEST_CODE);
-			return;
-		}
-		setUpLocationListener();
-	}
-
-	// when the user makes a response
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (hasLocationPermission()) {
-			setUpLocationListener();
-		}
-	}
-
-	private void setUpLocationListener() {
-		if (mLocationManager == null) {
-			// set up location listener
-			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-			mProvider = mLocationManager.getBestProvider(new Criteria(), false);
-			//noinspection ResourceType
-			mLocationManager.requestLocationUpdates(mProvider, 0, 0, this);
-			//noinspection ResourceType (we check permissions in the haslocationpermission method)
-			mLocation = mLocationManager.getLastKnownLocation(mProvider);
-			if (mLocation != null) {
-				mMainFragment.setLatitude(mLocation.getLatitude());
-				mMainFragment.setLongitude(mLocation.getLongitude());
-				mMainFragment.setLocationName(getLocationName(mLocation));
-			}
-			//noinspection ResourceType
-			mLocationManager.requestLocationUpdates(mProvider, 15000, 0, this);
-		}
-	}
-
-	private String getLocationName(Location location) {
-		Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-		String locationName = "Couldn't parse location";
-		try {
-			List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-			if (addressList != null && addressList.size() > 0) {
-				locationName = addressList.get(0).getLocality();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return locationName;
+		mMainFragment.setLocationName("Xi'an");
 	}
 
 	@Override
@@ -248,14 +177,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (hasLocationPermission()) {
-			//noinspection ResourceType
-			mLocationManager.removeUpdates(this);
-		}
-	}
-
-	private boolean hasLocationPermission() {
-		return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	@Override
@@ -263,32 +184,4 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnUp
 		outState.putBoolean(KEY_ISFAHRENHEIT, mIsFahrenheit);
 		super.onSaveInstanceState(outState);
 	}
-
-	// ########## Location Listener methods ############
-	@Override
-	public void onLocationChanged(Location location) {
-		mLocation = location;
-
-		mMainFragment.setLatitude(mLocation.getLatitude());
-		mMainFragment.setLongitude(mLocation.getLongitude());
-		mMainFragment.setLocationName(getLocationName(mLocation));
-		mMainFragment.getForecast();
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-
-	}
-	// ########## End Location Listener Methods ############
-
 }

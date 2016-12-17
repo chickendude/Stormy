@@ -57,8 +57,8 @@ public class MainFragment extends Fragment {
 	ImageView mRefreshImageView;
 	ProgressBar mProgressBar;
 
-	private static double mLatitude = 0;
-	private static double mLongitude = 0;
+	private static double mLatitude = 34.26488d;
+	private static double mLongitude = 108.944265d;
 	private static String mLocationName;
 
 	public interface OnUpdatedWeatherDataListener {
@@ -118,11 +118,6 @@ public class MainFragment extends Fragment {
 
 		if (isNetworkAvailable()) {
 			toggleRefresh();
-			if (mLatitude == 0 || mLongitude == 0) {
-				new AlertDialog(getActivity().getFragmentManager(),AlertDialog.LOCATION_ERROR).show();
-				toggleRefresh();
-				return;
-			}
 			OkHttpClient client = new OkHttpClient();
 			Request request = new Request.Builder()
 					.url(forecastUrl)
